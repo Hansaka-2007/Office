@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-light: #4895ef;
+            --secondary: #3f37c9;
+            --dark: #1b263b;
+            --light: #f8f9fa;
+            --success: #4cc9f0;
+            --warning: #f8961e;
+            --danger: #f72585;
+            --gray: #adb5bd;
+            --gray-dark: #495057;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 24px;
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid white;
+            color: white;
+        }
+        
+        .btn-outline:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        /* Main Content */
+        .main-content {
+            padding: 30px 0;
+        }
+        
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .page-title h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .page-title p {
+            color: var(--gray-dark);
+            font-size: 14px;
+        }
+        
+        .search-filter {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .search-box {
+            position: relative;
+        }
+        
+        .search-box input {
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            width: 250px;
+            transition: all 0.3s;
+            background-color: white;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        /* Card Styles */
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* Table Styles */
+        .table-responsive {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: #f8f9fa;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-dark);
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            color: var(--gray-dark);
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        tr:hover {
+            background-color: #f8fafc;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-confirmed {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success);
+        }
+        
+        .status-pending {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning);
+        }
+        
+        .status-cancelled {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .edit-btn {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+        }
+        
+        .edit-btn:hover {
+            background-color: rgba(67, 97, 238, 0.2);
+        }
+        
+        .delete-btn {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger);
+        }
+        
+        .delete-btn:hover {
+            background-color: rgba(247, 37, 133, 0.2);
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            width: 50%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+            animation: slideDown 0.4s;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .close {
+            color: var(--gray);
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .close:hover {
+            color: var(--danger);
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--gray-dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-card .stat-title {
+            font-size: 14px;
+            color: var(--gray-dark);
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .stat-change {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .stat-card .stat-change.up {
+            color: var(--success);
+        }
+        
+        .stat-card .stat-change.down {
+            color: var(--danger);
+        }
+        
+        /* Chart Container */
+        .chart-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            height: 300px;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .modal-content {
+                width: 70%;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .search-filter {
+                width: 100%;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .modal-content {
+                width: 90%;
+                margin: 10% auto;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-btns {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-box-open"></i>
+                <h1>Order Management</h1>
+            </div>
+            <div class="user-actions">
+                <button class="btn btn-outline">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <button class="btn btn-outline">
+                    <i class="fas fa-user"></i>
+                    <span>Admin</span>
+                </button>
+            </div>
+        </div>
+    </header>
+    
+    <div class="main-content">
+        <div class="container">
+            <!-- Stats Cards -->
+            <div class="stats-container" id="statsContainer">
+                <!-- Stats will be populated by JavaScript -->
+            </div>
+            
+            <!-- Chart Section -->
+            <div class="chart-container">
+                <canvas id="ordersChart"></canvas>
+            </div>
+            
+            <!-- Orders Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Order List</h3>
+                    <button id="addEntryBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        <span>Add New Order</span>
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="dashboard-header">
+                        <div class="page-title">
+                            <h2>Recent Orders</h2>
+                            <p>View and manage all customer orders</p>
+                        </div>
+                        <div class="search-filter">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchInput" placeholder="Search orders...">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>REF NO</th>
+                                    <th>SAMPLE</th>
+                                    <th>PRODUCTS</th>
+                                    <th>NAME</th>
+                                    <th>PHONE</th>
+                                    <th>AREA</th>
+                                    <th>STATUS</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <!-- Orders will be populated here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add/Edit Modal -->
+    <div id="entryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Add New Order</h3>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="entryForm">
+                    <div class="form-group">
+                        <label for="refNo">REF NO</label>
+                        <input type="text" id="refNo" name="refNo" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sample">SAMPLE</label>
+                        <input type="text" id="sample" name="sample" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="products">PRODUCTS</label>
+                        <textarea id="products" name="products" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">NAME</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">PHONE NO</label>
+                        <input type="text" id="phone" name="phone" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="area">AREA</label>
+                        <input type="text" id="area" name="area" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="status">STATUS</label>
+                        <select id="status" name="status" class="form-control">
+                            <option value="CONFIRMED">CONFIRMED</option>
+                            <option value="PENDING">PENDING</option>
+                            <option value="CANCELLED">CANCELLED</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">NOTES</label>
+                        <textarea id="notes" name="notes" class="form-control" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn" id="cancelBtn">Cancel</button>
+                <button type="submit" form="entryForm" class="btn btn-primary">Save Order</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database simulation using localStorage
+        const DB_NAME = 'order_management_db';
+        
+// Initialize database with all your provided orders
+        function initDB() {
+            if (!localStorage.getItem(DB_NAME)) {
+                const initialData = {
+                    orders: [
+                        { id: 1, refNo: "N.V.T 48", sample: "කුඩය 02/Haji බෙඩ් ෂිට්/J.B.L", products: "", name: "Karunawathi", phone: "0772455879", area: "තුන්හදහෙන්න", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 2, refNo: "N.V.T 47", sample: "J.B.L/Haji බෙඩ් ෂිට්", products: "", name: "D.L Sanjiwa", phone: "0743118804", area: "කුරුවිට", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 3, refNo: "N.V.T 46", sample: "පිගන් රක්ක/Haji බෙඩ් ෂිට්/කුඩය", products: "", name: "K.A Siriyawathi", phone: "0719973647", area: "හිදැලන", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 4, refNo: "N.V.T 45", sample: "J.B.L", products: "", name: "Maduranga", phone: "0716459519", area: "J.B.L", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 5, refNo: "N.V.T 44", sample: "පිගන් රක්ක/Haji බෙඩ් ෂිට්", products: "", name: "Dayawathi", phone: "0742654042", area: "උඩකරවිට", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 6, refNo: "N.V.T 43", sample: "J.B.L", products: "", name: "Ruwika", phone: "0763010562", area: "උඩකරවිට", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 7, refNo: "N.V.T 42", sample: "J.B.L", products: "", name: "Thushari", phone: "0770067341", area: "උඩකරවිට", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 8, refNo: "N.V.T 41", sample: "කුඩය/Haji බෙඩ් ෂිට්", products: "", name: "-", phone: "0701776763", area: "නිවතිගල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 9, refNo: "N.V.T 40", sample: "කුඩය", products: "", name: "G.D Kumuduni", phone: "0779737159", area: "රත්නපුර", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 10, refNo: "N.V.T 39", sample: "J.B.L", products: "", name: "Lakmali", phone: "0772239499", area: "රත්නපුර", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 11, refNo: "N.V.T 38", sample: "Haji බෙඩ් ෂිට්", products: "", name: "Sumith", phone: "0452232854", area: "ඇත්ඔය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 12, refNo: "N.V.T 37", sample: "Haji බෙඩ් ෂිට්/පිගන් රක්ක", products: "", name: "Pahim", phone: "0719179916", area: "රත්නපුර", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 13, refNo: "N.V.T 36", sample: "කුඩය 02/Haji බෙඩ් ෂිට්/පැන්/අයන්/මග්", products: "", name: "Ashan", phone: "0766298982", area: "රත්නපුර", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 14, refNo: "N.V.T 35", sample: "ලාචුචු 06/J.B.L", products: "", name: "Nadika", phone: "0785384801", area: "ගොඩගෙදර", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 15, refNo: "N.V.T 33", sample: "කුඩය", products: "", name: "Sadew", phone: "0702828566", area: "-", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 16, refNo: "N.V.T 32", sample: "Haji බෙඩ් ෂිට්", products: "", name: "J.H Siriyalatha", phone: "-", area: "-", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 17, refNo: "N.V.T 31", sample: "J.B.L", products: "", name: "Lalith", phone: "0719220023", area: "-", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 18, refNo: "N.V.T 30", sample: "J.B.L/කුඩය", products: "", name: "Nadisha", phone: "0717645216", area: "රබර් කඩය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 19, refNo: "N.V.T 29", sample: "Haji බෙඩ් ෂිට්/කුඩය", products: "", name: "Susila", phone: "0706656514", area: "-", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 20, refNo: "N.V.T 28", sample: "J.B.L", products: "", name: "Abesiri", phone: "0718846530", area: "කොටමුල්ල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 21, refNo: "N.V.T 27", sample: "Haji බෙඩ් ෂිට්/කුඩය", products: "", name: "Chamath", phone: "0714776512", area: "4 කනුව", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 22, refNo: "N.V.T 26", sample: "කුඩය", products: "", name: "Danasiri", phone: "0712028149", area: "නිවතිගල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 23, refNo: "N.V.T 25", sample: "J.B.L,කුඩය", products: "", name: "D.R Nandawathi", phone: "0702003858", area: "දොළොස්වල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 24, refNo: "N.V.T 24", sample: "J.B.L,කුඩය", products: "", name: "Indrani", phone: "0715524628", area: "නිවිතිගල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 25, refNo: "N.V.T 23", sample: "J.B.L", products: "", name: "Wathsala", phone: "0772580064", area: "-", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 26, refNo: "N.V.T 22", sample: "J.B.L", products: "", name: "Sarath", phone: "0712317601", area: "දැල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 27, refNo: "N.V.T 21", sample: "J.B.L,කුඩය", products: "", name: "Lakmal", phone: "0741914115", area: "දැල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 28, refNo: "N.V.T 20", sample: "s.s වලං,කුඩය", products: "", name: "Sunethra", phone: "0703218957", area: "දැල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 29, refNo: "N.V.T 19", sample: "කුඩය", products: "", name: "A.K Perera", phone: "-", area: "කිරිබත්ගල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 30, refNo: "N.V.T 18", sample: "J.B.L", products: "", name: "Sachintha", phone: "0760244181", area: "කිරිබත්ගල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 31, refNo: "N.V.T 17", sample: "J.B.L", products: "", name: "S.P Ranjith", phone: "0713447332", area: "දැල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 32, refNo: "N.V.T 16", sample: "J.B.L", products: "", name: "H.A Chandra", phone: "0716564193", area: "දැල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 33, refNo: "N.V.T 15", sample: "J.B.L", products: "", name: "Thilak", phone: "0716634780", area: "දැල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 34, refNo: "N.V.T 14", sample: "කුඩය", products: "", name: "H. Rohini", phone: "0710120175", area: "දැල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 35, refNo: "N.V.T 13", sample: "කුඩය/ෆැසිපික් පුටු", products: "", name: "Rathna", phone: "0716232413", area: "රත්නපුර", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 36, refNo: "N.V.T 12", sample: "කුඩය /ලාචුචු 06/ෆැසිපික් පුටු/J.B.L", products: "", name: "Ishani", phone: "0715770147", area: "රත්නපුර", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 37, refNo: "N.V.T 11", sample: "Haji බෙඩ් ෂිට්/කුඩය", products: "", name: "Ariyawathi", phone: "0711495712", area: "නාගොඩ", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 38, refNo: "N.V.T 10", sample: "Haji බෙඩ් ෂිට්/කුඩය/2kg රයිස්", products: "", name: "Sensiri", phone: "0764453964", area: "පුවක්ගහවෙලවත්ත", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 39, refNo: "N.V.T 09", sample: "පිගන් රක්ක", products: "", name: "Dilani", phone: "0452265725", area: "පුවක්ගහවෙලවත්ත", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 40, refNo: "N.V.T 08", sample: "කුඩය", products: "", name: "Samanthi", phone: "-", area: "මඩවල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 41, refNo: "N.V.T 07", sample: "J.B.L/Haji Bedshit", products: "", name: "Jayasekara", phone: "0779605270", area: "එල්ලාවල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 42, refNo: "N.V.T 06", sample: "Haji Bedshit", products: "", name: "Renuka", phone: "0768440545", area: "", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 43, refNo: "N.V.T 05", sample: "පැන් සෙට්", products: "", name: "Gayani", phone: "0779991736", area: "වටුවාවල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 44, refNo: "N.V.T 04", sample: "කුඩය /J.B.L/Haji bedshit", products: "", name: "Sunil", phone: "0702257537", area: "කිරිඇල්ල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 45, refNo: "N.V.T 03", sample: "කුඩය /Haji Bedshit", products: "", name: "Pupa", phone: "0760220950", area: "සපුගොඩ", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 46, refNo: "N.V.T 02", sample: "කුඩය", products: "", name: "Gimanal", phone: "0719195700", area: "දැල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 47, refNo: "N.V.T 01", sample: "කුඩය/J.B.L", products: "", name: "Anoma", phone: "0452229009", area: "මවුදැල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 48, refNo: "A.G.L 67", sample: "කුඩය", products: "", name: "Chandra", phone: "07292278212", area: "ගොවින්න", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 49, refNo: "A.G.L 66", sample: "කුඩය", products: "", name: "Henawithana", phone: "0779179169", area: "ගොවින්න", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 50, refNo: "A.G.L 65", sample: "කුඩය", products: "", name: "Rajina", phone: "0772302100", area: "ගොවින්න", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 51, refNo: "A.G.L 64", sample: "කුඩය", products: "", name: "Amila", phone: "-", area: "ගොවින්න", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 52, refNo: "A.G.L 63", sample: "කුඩය", products: "", name: "Ranasinha", phone: "0742989401", area: "ගොවින්න", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 53, refNo: "A.G.L 62", sample: "කුඩය", products: "", name: "Wasantha", phone: "0764789330", area: "ගොවින්න", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 54, refNo: "A.G.L 21", sample: "ෆැසිපික් පුටු /කුඩය /Courburd/පිගන් සෙට්", products: "", name: "Disaru", phone: "716070365", area: "අගලවත්ත", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 55, refNo: "A.G.L 20", sample: "කුඩය", products: "", name: "Wasanatha", phone: "-", area: "හැඩිගල්ල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 56, refNo: "A.G.L 19", sample: "කුඩය /Haji Bedshit", products: "", name: "Kamala", phone: "762124350", area: "හැඩිගල්ල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 57, refNo: "A.G.L 18", sample: "කුඩය", products: "", name: "Nandana", phone: "718964756", area: "හැඩිගල්ල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 58, refNo: "A.G.L 17", sample: "කුඩය /Haji Bedshit", products: "", name: "Champa", phone: "716153118", area: "හැඩිගල්ල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 59, refNo: "A.G.L 16", sample: "කුඩය", products: "", name: "Shanuka", phone: "771511709", area: "හැඩිගල්ල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 60, refNo: "A.G.L 15", sample: "කුඩය /JBL", products: "", name: "Chamara", phone: "716153118", area: "හැඩිගල්ල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 61, refNo: "A.G.L 14", sample: "කුඩය /ෆැසිපික් පුටු /Haji Bedshit", products: "", name: "H.M Malika", phone: "767329602", area: "බදුරලිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 62, refNo: "A.G.L 13", sample: "කුඩය /J.B.L", products: "", name: "Aananda", phone: "762474786", area: "බදුරලිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 63, refNo: "A.G.L 12", sample: "කුඩය /Haji Bedshit", products: "", name: "Rajitha", phone: "777268573", area: "බදුරලිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 64, refNo: "A.G.L 11", sample: "කුඩය - 01", products: "", name: "Amarathunga", phone: "77768573", area: "මොරපිටිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 65, refNo: "A.G.L 10", sample: "ෆැසිපික් පුටු /Haji Bedshit", products: "", name: "Sadun", phone: "717363989", area: "වෙලකම්ගොඩ්", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 66, refNo: "A.G.L 09", sample: "කුඩය /J.B.L/ෆැසිපික් පුටු", products: "", name: "M.A Karunawantha", phone: "716956786", area: "මොරපිටිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 67, refNo: "A.G.L 08", sample: "කුඩය - 01/Haji Set", products: "", name: "Piyanka", phone: "714544858", area: "බදුරලිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 68, refNo: "A.G.L 07", sample: "කුඩය - 01", products: "", name: "Chaminda", phone: "779763016", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 69, refNo: "A.G.L 06", sample: "කුඩ සාම්පල්", products: "", name: "Jiwaka", phone: "778069440", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 70, refNo: "A.G.L 05", sample: "කුඩ සාම්පල්", products: "", name: "Thisara", phone: "770314660", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 71, refNo: "A.G.L 04", sample: "කුඩ සාම්පල්", products: "", name: "I.M Perera", phone: "77931884", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 72, refNo: "A.G.L 03", sample: "කුඩ සාම්පල්", products: "", name: "K.Siriyalatha", phone: "725246227", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 73, refNo: "A.G.L 02", sample: "කුඩ සාම්පල්", products: "", name: "Ranamali", phone: "714553988", area: "ඉංගිරිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 74, refNo: "A.G.L 01", sample: "කුඩ සාම්පල්", products: "", name: "Hashini", phone: "742740587", area: "ඉංගිරිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 75, refNo: "A.G.L 22", sample: "කුඩය /ලාචුචුකබඩ්/පිගන්සෙට්/ෆැසිපික් පුටු /ස්ටුල්", products: "", name: "Sadun", phone: "717076056", area: "අගලවත්ත", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 76, refNo: "A.G.L 23", sample: "කුඩය", products: "", name: "P.Jayanthi", phone: "711996313", area: "අගලවත්ත", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 77, refNo: "A.G.L 24", sample: "Haji බෙඩ් ෂිට්", products: "", name: "K.M Mangalika", phone: "703484520", area: "අගලවත්ත", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 78, refNo: "A.G.L 25", sample: "පිගන් රක්ක", products: "", name: "D.F Pradhip", phone: "705142952", area: "තිබෝට්ටව", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 79, refNo: "A.G.L 26", sample: "Haji බෙඩ් ෂිට්", products: "", name: "Sanjiwani", phone: "779078871", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 80, refNo: "A.G.L 27", sample: "ෆැසිපික් පුටු/Haji බෙඩ් ෂිට්", products: "", name: "Sanja", phone: "778576217", area: "ගල්කැටිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 81, refNo: "A.G.L 28", sample: "Haji බෙඩ් ෂිට්/කුඩය", products: "", name: "Indunani", phone: "774970324", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 82, refNo: "A.G.L 29", sample: "Haji බෙඩ් ෂිට්/ෆැසිපික් පුටු", products: "", name: "W.P Renuka", phone: "771579900", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 83, refNo: "A.G.L 30", sample: "කුඩය/ෆැසිපික් පුටු/Haji බෙඩ් ෂිට්", products: "", name: "Mahndidum", phone: "770768487", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 84, refNo: "A.G.L 31", sample: "කුඩය/Haji බෙඩ් ෂිට්", products: "", name: "Ruwan", phone: "710525852", area: "මොරපිටිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 85, refNo: "A.G.L 32", sample: "ෆැසිපික් පුටු/Haji බෙඩ් ෂිට්", products: "", name: "Minithila", phone: "710444678", area: "මොරපිටිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 86, refNo: "A.G.L 33", sample: "කුඩය", products: "", name: "Ranjani", phone: "773668257", area: "බදුරලිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 87, refNo: "A.G.L 34", sample: "Haji බෙඩ් ෂිට්", products: "", name: "K.K Kulasekara", phone: "770231180", area: "මොරපිටිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 88, refNo: "A.G.L 35", sample: "පිගන් රක්ක", products: "", name: "Dayangani", phone: "778078283", area: "බදුරලිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 89, refNo: "A.G.L 36", sample: "කුඩය", products: "", name: "Lalitha", phone: "742238814", area: "බදුරලිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 90, refNo: "A.G.L 37", sample: "Haji බෙඩ් ෂිට්", products: "", name: "K.A Sadun", phone: "744627675", area: "බදුරලිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 91, refNo: "A.G.L 38", sample: "කුඩය", products: "", name: "Kadnarachi", phone: "715615316", area: "බදුරලිය", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 92, refNo: "A.G.L 39", sample: "කුඩය", products: "", name: "D.L.J Renuka", phone: "773434531", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 93, refNo: "A.G.L 40", sample: "කුඩය", products: "", name: "Dayani", phone: "704194646", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 94, refNo: "A.G.L 41", sample: "Haji බෙඩ් ෂිට්/කුඩය/පිගන් රක්ක", products: "", name: "Maitripala", phone: "716955128", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 95, refNo: "A.G.L 42", sample: "කුඩය", products: "", name: "H. Anoma", phone: "710140774", area: "දෙල්මැල්ල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 96, refNo: "A.G.L 43", sample: "කුඩය/පිගන් රක්ක/ලාච්චු", products: "", name: "Hansa", phone: "767753899", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 97, refNo: "A.G.L 44", sample: "Haji බෙඩ් ෂිට්/කුඩය", products: "", name: "S.D Dipika", phone: "703270874", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 98, refNo: "A.G.L 45", sample: "කුඩය", products: "", name: "Nandi", phone: "762102330", area: "බුලත්සිංහල", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 99, refNo: "A.G.L 46", sample: "Haji බෙඩ් ෂිට්", products: "", name: "Pasara", phone: "782559765", area: "අගලවත්ත", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 100, refNo: "A.G.L 47", sample: "Haji බෙඩ් ෂිට්", products: "", name: "Mahodu", phone: "342249737", area: "අගලවත්ත", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 101, refNo: "A.G.L 48", sample: "Haji බෙඩ් ෂිට්/කුඩය", products: "", name: "Nilanthi", phone: "779807957", area: "අගලවත්ත", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 102, refNo: "A.G.L 49", sample: "කුඩය", products: "", name: "A.M.G Uduwela", phone: "766245098", area: "අගලවත්ත", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 103, refNo: "A.G.L 50", sample: "කුඩය", products: "", name: "Kanthi", phone: "766209976", area: "මතුගම", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 104, refNo: "A.G.L 51", sample: "කුඩය", products: "", name: "Somalatha", phone: "0342243457", area: "මතුගම", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 105, refNo: "A.G.L 52", sample: "කුඩය", products: "", name: "K.A Ranjini", phone: "724781733", area: "මතුගම", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 106, refNo: "A.G.L 53", sample: "කුඩය /ලාචුචුකබඩ්", products: "", name: "Gayani", phone: "718583033", area: "මතුගම", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 107, refNo: "A.G.L 54", sample: "Haji බෙඩ් ෂිට්/කුඩය", products: "", name: "Ganika", phone: "764403853", area: "මතුගම", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 108, refNo: "A.G.L 55", sample: "කුඩය", products: "", name: "Damaiyanthi", phone: "760164701", area: "මතුගම", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 109, refNo: "A.G.L 56", sample: "කුඩය", products: "", name: "Mangalika", phone: "786479008", area: "වැලිපැන්න", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 110, refNo: "A.G.L 57", sample: "කුඩය", products: "", name: "P.A Mangalika", phone: "741976514", area: "වැලිපැන්න", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 111, refNo: "A.G.L 58", sample: "කුඩය", products: "", name: "Aaruni", phone: "787324650", area: "වැලිපැන්න", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 112, refNo: "A.G.L 59", sample: "Haji බෙඩ් ෂිට්/කුඩය", products: "", name: "Wasantha", phone: "752361141", area: "වැලිපැන්න", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 113, refNo: "A.G.L 60", sample: "Haji බෙඩ් ෂිට්/කුඩය", products: "", name: "Budika", phone: "711949548", area: "මතුගම", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() },
+                        { id: 114, refNo: "A.G.L 61", sample: "Haji බෙඩ් ෂිට්", products: "", name: "Dipika", phone: "711947770", area: "මතුගම", status: "CONFIRMED", action: "ACTIVE", notes: "", createdAt: new Date().toISOString() }
+                    ],
+                };
+                localStorage.setItem(DB_NAME, JSON.stringify(initialData));
+            }
+        }
+        
+        // Get all data from database
+        function getDB() {
+            return JSON.parse(localStorage.getItem(DB_NAME));
+        }
+        
+        // Save data to database
+        function saveDB(data) {
+            localStorage.setItem(DB_NAME, JSON.stringify(data));
+        }
+        
+        // Get all orders
+        function getOrders() {
+            const db = getDB();
+            return db.orders;
+        }
+        
+        // Add new order
+        function addOrder(order) {
+            const db = getDB();
+            const newId = db.settings.lastOrderId + 1;
+            const newOrder = {
+                id: newId,
+                ...order,
+                createdAt: new Date().toISOString()
+            };
+            db.orders.push(newOrder);
+            db.settings.lastOrderId = newId;
+            saveDB(db);
+            return newOrder;
+        }
+        
+        // Update order
+        function updateOrder(updatedOrder) {
+            const db = getDB();
+            const index = db.orders.findIndex(o => o.id === updatedOrder.id);
+            if (index !== -1) {
+                db.orders[index] = updatedOrder;
+                saveDB(db);
+                return true;
+            }
+            return false;
+        }
+        
+        // Delete order
+        function deleteOrder(id) {
+            const db = getDB();
+            const index = db.orders.findIndex(o => o.id === id);
+            if (index !== -1) {
+                db.orders.splice(index, 1);
+                saveDB(db);
+                return true;
+            }
+            return false;
+        }
+        
+        // DOM Elements
+        const ordersTableBody = document.getElementById('ordersTableBody');
+        const statsContainer = document.getElementById('statsContainer');
+        const addEntryBtn = document.getElementById('addEntryBtn');
+        const searchInput = document.getElementById('searchInput');
+        const modal = document.getElementById('entryModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const closeBtn = document.querySelector('.close');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const entryForm = document.getElementById('entryForm');
+        let ordersChart;
+        
+        // Current order being edited
+        let currentOrder = null;
+        
+        // Initialize the app
+        function init() {
+            initDB();
+            renderDashboard();
+            setupEventListeners();
+        }
+        
+        // Render dashboard with stats and chart
+        function renderDashboard() {
+            const orders = getOrders();
+            renderStats(orders);
+            renderChart(orders);
+            renderOrders(orders);
+        }
+        
+        // Render statistics cards
+        function renderStats(orders) {
+            const totalOrders = orders.length;
+            const confirmedOrders = orders.filter(o => o.status === 'CONFIRMED').length;
+            const pendingOrders = orders.filter(o => o.status === 'PENDING').length;
+            const cancelledOrders = orders.filter(o => o.status === 'CANCELLED').length;
+            
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-title">Total Orders</div>
+                    <div class="stat-value">${totalOrders}</div>
+                    <div class="stat-change up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>${Math.floor(totalOrders * 0.12)} from last month</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Confirmed</div>
+                    <div class="stat-value">${confirmedOrders}</div>
+                    <div class="stat-change up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>${Math.floor(confirmedOrders * 0.08)} from last month</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Pending</div>
+                    <div class="stat-value">${pendingOrders}</div>
+                    <div class="stat-change down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>${Math.floor(pendingOrders * 0.03)} from last month</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-title">Cancelled</div>
+                    <div class="stat-value">${cancelledOrders}</div>
+                    <div class="stat-change down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>${Math.floor(cancelledOrders * 0.01)} from last month</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Render chart
+        function renderChart(orders) {
+            const ctx = document.getElementById('ordersChart').getContext('2d');
+            
+            // Group orders by status
+            const statusCounts = orders.reduce((acc, order) => {
+                acc[order.status] = (acc[order.status] || 0) + 1;
+                return acc;
+            }, {});
+            
+            // Destroy previous chart if exists
+            if (ordersChart) {
+                ordersChart.destroy();
+            }
+            
+            ordersChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Confirmed', 'Pending', 'Cancelled'],
+                    datasets: [{
+                        data: [
+                            statusCounts['CONFIRMED'] || 0,
+                            statusCounts['PENDING'] || 0,
+                            statusCounts['CANCELLED'] || 0
+                        ],
+                        backgroundColor: [
+                            'rgba(76, 201, 240, 0.7)',
+                            'rgba(248, 150, 30, 0.7)',
+                            'rgba(247, 37, 133, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(76, 201, 240, 1)',
+                            'rgba(248, 150, 30, 1)',
+                            'rgba(247, 37, 133, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Orders by Status',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Render orders to the table
+        function renderOrders(ordersToRender) {
+            ordersTableBody.innerHTML = '';
+            
+            if (ordersToRender.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="8" style="text-align: center; padding: 30px;">No orders found</td>`;
+                ordersTableBody.appendChild(row);
+                return;
+            }
+            
+            ordersToRender.forEach(order => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${order.refNo}</td>
+                    <td>${order.sample}</td>
+                    <td>${order.products}</td>
+                    <td>${order.name}</td>
+                    <td>${order.phone}</td>
+                    <td>${order.area}</td>
+                    <td><span class="status status-${order.status.toLowerCase()}">${order.status}</span></td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn edit-btn" data-id="${order.id}">
+                                <i class="fas fa-edit"></i>
+                                <span>Edit</span>
+                            </button>
+                            <button class="action-btn delete-btn" data-id="${order.id}">
+                                <i class="fas fa-trash"></i>
+                                <span>Delete</span>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                
+                ordersTableBody.appendChild(row);
+            });
+        }
+        
+        // Filter orders based on search term
+        function filterOrders(searchTerm) {
+            const orders = getOrders();
+            
+            if (!searchTerm) {
+                return orders;
+            }
+            
+            searchTerm = searchTerm.toLowerCase();
+            return orders.filter(order => 
+                (order.refNo && order.refNo.toLowerCase().includes(searchTerm)) ||
+                (order.name && order.name.toLowerCase().includes(searchTerm)) ||
+                (order.phone && order.phone.toLowerCase().includes(searchTerm)) ||
+                (order.area && order.area.toLowerCase().includes(searchTerm)) ||
+                (order.status && order.status.toLowerCase().includes(searchTerm)) ||
+                (order.products && order.products.toLowerCase().includes(searchTerm)) ||
+                (order.sample && order.sample.toLowerCase().includes(searchTerm)) ||
+                (order.notes && order.notes.toLowerCase().includes(searchTerm))
+            );
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Add new entry button
+            addEntryBtn.addEventListener('click', () => {
+                currentOrder = null;
+                modalTitle.textContent = 'Add New Order';
+                entryForm.reset();
+                modal.style.display = 'block';
+            });
+            
+            // Close modal buttons
+            closeBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            cancelBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+            
+            // Click outside modal to close
+            window.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Form submission
+            entryForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const formData = new FormData(entryForm);
+                const orderData = {
+                    refNo: formData.get('refNo'),
+                    sample: formData.get('sample'),
+                    products: formData.get('products'),
+                    name: formData.get('name'),
+                    phone: formData.get('phone'),
+                    area: formData.get('area'),
+                    status: formData.get('status'),
+                    notes: formData.get('notes')
+                };
+                
+                if (currentOrder) {
+                    // Update existing order
+                    const updatedOrder = {
+                        ...currentOrder,
+                        ...orderData
+                    };
+                    if (updateOrder(updatedOrder)) {
+                        renderDashboard();
+                    }
+                } else {
+                    // Add new order
+                    addOrder(orderData);
+                    renderDashboard();
+                }
+                
+                modal.style.display = 'none';
+            });
+            
+            // Edit and Delete buttons (using event delegation)
+            ordersTableBody.addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.edit-btn');
+                const deleteBtn = e.target.closest('.delete-btn');
+                
+                if (editBtn) {
+                    const id = parseInt(editBtn.getAttribute('data-id'));
+                    currentOrder = getOrders().find(order => order.id === id);
+                    
+                    if (currentOrder) {
+                        modalTitle.textContent = 'Edit Order';
+                        document.getElementById('refNo').value = currentOrder.refNo;
+                        document.getElementById('sample').value = currentOrder.sample;
+                        document.getElementById('products').value = currentOrder.products;
+                        document.getElementById('name').value = currentOrder.name;
+                        document.getElementById('phone').value = currentOrder.phone;
+                        document.getElementById('area').value = currentOrder.area;
+                        document.getElementById('status').value = currentOrder.status;
+                        document.getElementById('notes').value = currentOrder.notes || '';
+                        
+                        modal.style.display = 'block';
+                    }
+                }
+                
+                if (deleteBtn) {
+                    if (confirm('Are you sure you want to delete this order?')) {
+                        const id = parseInt(deleteBtn.getAttribute('data-id'));
+                        if (deleteOrder(id)) {
+                            renderDashboard();
+                        }
+                    }
+                }
+            });
+            
+            // Search functionality
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value;
+                const filteredOrders = filterOrders(searchTerm);
+                renderOrders(filteredOrders);
+            });
+        }
+        
+        // Initialize the application
+        init();
+    </script>
+</body>
+</html>
